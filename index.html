@@ -9,6 +9,19 @@
     .hidden { display: none; }
     .card { border: 1px solid #ccc; padding: 15px; border-radius: 8px; overflow: hidden; }
 
+      /* ✅ ADD THIS (Safari fix) */
+    #formPage {
+      display: flex;
+      flex-direction: column;
+    }
+  
+    #formPage label {
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
 
     .modal {
     display: none; 
@@ -42,20 +55,20 @@
   <input type="text" id="contact" placeholder="Contact Number" required>
   <input type="text" id="address" placeholder="Address (optional)">
 
-  <label>Court</label>
+  <label for="court">Court</label>
   <select id="court">
     <option value="">Select Court</option>
     <option value="Court 1">Court 1</option>
     <option value="Court 2">Court 2</option>
   </select>
 
-  <label>Date</label>
+  <label for="date">Date</label>
   <input type="date" id="date" required onchange="updateTimeInOptions()">
 
-  <label>Time-in</label>
+  <label for="timeIn">Time-in</label>
   <select id="timeIn" onchange="updateDuration()"></select>
 
-  <label>Duration of stay</label>
+  <label for="duration">Duration of stay</label>
   <select id="duration" onchange="computeTotal(); updateBreakdownButton();"></select>
 
   <button type="button" onclick="checkAvailability(event)" 
@@ -63,13 +76,14 @@
     Check Court Availability
   </button>
 
-  <p>
-  <strong>Total: ₱<span id="total">0</span></strong>
-  <button type="button" id="breakdownBtn" onclick="showBreakdownModal()" disabled
-    style="margin-top:10px; background:#40b55c; color:white; border:none; border-radius:5px; padding:6px 10px;">
-    Price Breakdown
-  </button>
-  </p>
+  <div>
+    <strong>Total: ₱<span id="total">0</span></strong>
+  
+    <button type="button" id="breakdownBtn" onclick="showBreakdownModal()" disabled
+      style="margin-top:10px; background:#40b55c; color:white; border:none; border-radius:5px; padding:6px 10px;">
+      Price Breakdown
+    </button>
+  </div>
 
   <button type="button" id="paymentBtn" onclick="goToSummary()">Proceed to Payment</button>
 </div>
