@@ -154,9 +154,6 @@
   const closingHour = 24;
 
 
-  // Populate Time In
-  const timeSelect = document.getElementById("timeIn");
-
   function formatTime(h) {
     let suffix = h >= 12 ? "PM" : "AM";
     let hour = h % 12 || 12;
@@ -404,11 +401,11 @@
   }
 
   // Init
-  window.addEventListener("DOMContentLoaded", () => {
+  window.onload = function () {
     setMinDate();
     updateTimeInOptions();
     updateBreakdownButton();
-  });
+  };
 
   function setMinDate() {
     const dateInput = document.getElementById("date");
