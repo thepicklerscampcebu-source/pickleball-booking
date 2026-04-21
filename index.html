@@ -8,6 +8,7 @@
     input, select, button { width: 100%; padding: 8px; margin: 6px 0; }
     .hidden { display: none !important; }
     .card { border: 1px solid #ccc; padding: 15px; border-radius: 8px; overflow: hidden; }
+    .input-error {border: 2px solid red !important; }
 
       /* ✅ ADD THIS (Safari fix) */
     #formPage {
@@ -167,6 +168,11 @@
   const openingHour = 7;
   const closingHour = 24;
 
+  function isValidEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+  
 
   function formatTime(h) {
     let suffix = h >= 12 ? "PM" : "AM";
@@ -238,6 +244,13 @@
 
     if (!data.email) {
       alert("Please input your email.");
+      btn.disabled = false;
+      btn.innerText = "Proceed to Payment";
+      return;
+    }
+    
+    if (!isValidEmail(data.email)) {
+      alert("Please enter a valid email address.");
       btn.disabled = false;
       btn.innerText = "Proceed to Payment";
       return;
@@ -334,7 +347,7 @@
     let duration = parseInt(document.getElementById("duration").value) || 0;
 
     return {
-      email: document.getElementById("email").value,
+      email: document.getElementById("email").value.trim(),
       name: document.getElementById("name").value,
       contact: document.getElementById("contact").value,
       address: document.getElementById("address").value,
@@ -379,10 +392,19 @@
         })
         .then(res => res.json())
         .then(res => {
+          if (res.error) {
+            alert(res.error);
+            btn.disabled = false;
+            btn.innerText = "Submit Booking";
+            return;
+          }
+        
           showSuccessPage();
         })
         .catch(err => {
           alert("Error submitting booking");
+          btn.disabled = false;
+          btn.innerText = "Submit Booking";
         });
       };
 
@@ -434,6 +456,17 @@
     setMinDate();
     updateTimeInOptions();
     updateBreakdownButton();
+  
+    // ✅ REAL-TIME EMAIL VALIDATION
+    document.getElementById("email").addEventListener("input", function() {
+      const email = this.value.trim();
+    
+      if (email && !isValidEmail(email)) {
+        this.classList.add("input-error");
+      } else {
+        this.classList.remove("input-error");
+      }
+    });
   };
 
   function setMinDate() {
