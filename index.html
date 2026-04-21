@@ -52,6 +52,7 @@
   <h2>The Picklers Camp Cebu - Booking Form</h2>
 
   <input type="email" id="email" placeholder="Email" required>
+  <input type="email" id="confirmEmail" placeholder="Confirm Email" required>
   <input type="text" id="name" placeholder="Name" required>
   <input type="text" id="contact" placeholder="Contact Number" required>
   <input type="text" id="address" placeholder="Address (optional)">
@@ -251,6 +252,13 @@
     
     if (!isValidEmail(data.email)) {
       alert("Please enter a valid email address.");
+      btn.disabled = false;
+      btn.innerText = "Proceed to Payment";
+      return;
+    }
+
+    if (data.email !== document.getElementById("confirmEmail").value.trim()) {
+      alert("Emails do not match.");
       btn.disabled = false;
       btn.innerText = "Proceed to Payment";
       return;
@@ -457,16 +465,35 @@
     updateTimeInOptions();
     updateBreakdownButton();
   
-    // ✅ REAL-TIME EMAIL VALIDATION
-    document.getElementById("email").addEventListener("input", function() {
+    const emailInput = document.getElementById("email");
+    const confirmEmailInput = document.getElementById("confirmEmail");
+  
+    // EMAIL FORMAT VALIDATION
+    emailInput.addEventListener("input", function () {
       const email = this.value.trim();
-    
+  
       if (email && !isValidEmail(email)) {
         this.classList.add("input-error");
       } else {
         this.classList.remove("input-error");
       }
+  
+      validateEmailMatch();
     });
+  
+    // CONFIRM EMAIL MATCH VALIDATION
+    confirmEmailInput.addEventListener("input", validateEmailMatch);
+  
+    function validateEmailMatch() {
+      const email = emailInput.value.trim();
+      const confirmEmail = confirmEmailInput.value.trim();
+  
+      if (confirmEmail && email !== confirmEmail) {
+        confirmEmailInput.classList.add("input-error");
+      } else {
+        confirmEmailInput.classList.remove("input-error");
+      }
+    }
   };
 
   function setMinDate() {
