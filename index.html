@@ -303,6 +303,10 @@
       document.getElementById("formPage").classList.add("hidden");
       document.getElementById("summaryPage").classList.remove("hidden");
     })
+
+      btn.disabled = false;
+      btn.innerText = "Proceed to Payment";
+    
     .catch(err => {
       alert("Error: " + err.message);
     });
