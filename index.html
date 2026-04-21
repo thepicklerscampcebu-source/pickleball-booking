@@ -58,7 +58,7 @@
   <label>Duration of stay</label>
   <select id="duration" onchange="computeTotal(); updateBreakdownButton();"></select>
 
-  <button type="button" onclick="checkAvailability()" 
+  <button type="button" onclick="checkAvailability(event)" 
     style="background:#f44336; color:white; border:none; border-radius:5px;">
     Check Court Availability
   </button>
@@ -373,7 +373,7 @@
         <p>Please wait for confirmation via email.</p>
 
         <div style="margin-top:20px;">
-          <button onclick="createAnother()" 
+          <button onclick="createAnother(event)" 
             style="width:100%; padding:10px; margin-bottom:10px; background:#40b55c; color:white; border:none; border-radius:5px;">
             Create Another Booking
           </button>
@@ -388,7 +388,7 @@
   }
 
   // ✅ BUTTON ACTIONS
-  function createAnother() {
+  function createAnother(event) {
     const btn = event.target;
     btn.disabled = true;
     btn.innerText = "Redirecting...";
@@ -401,7 +401,7 @@
   }
 
   // Init
-  window.onload = function () {
+  window.addEventListener("DOMContentLoaded", function () {
     setMinDate();
     updateTimeInOptions();
     updateBreakdownButton();
@@ -423,41 +423,47 @@
   function updateTimeInOptions() {
     const timeSelect = document.getElementById("timeIn");
     const selectedDate = document.getElementById("date").value;
-
+  
     const now = new Date();
-    const todayStr = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split("T")[0];
-
+    const todayStr = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+                      .toISOString()
+                      .split("T")[0];
+  
     const currentHour = now.getHours();
-
+  
+    // 🔥 RESET FIRST (IMPORTANT)
     timeSelect.innerHTML = "";
-
-    // ✅ ADD THIS FIRST
+    document.getElementById("timeIn").value = "";
+    document.getElementById("duration").innerHTML = "";
+    document.getElementById("duration").disabled = true;
+  
+    // Placeholder
     let placeholder = document.createElement("option");
     placeholder.value = "";
     placeholder.text = "Select Time-in";
     timeSelect.add(placeholder);
-
+  
+    // Populate options
     for (let h = openingHour; h <= 23; h++) {
-
-      // If selected date is today, block past hours
-      if (selectedDate === todayStr && h <= currentHour) {
+  
+      if (selectedDate && selectedDate === todayStr && h <= currentHour) {
         continue;
       }
-
+  
       let opt = document.createElement("option");
       opt.value = h;
       opt.text = formatTime(h);
       timeSelect.add(opt);
     }
-
-    if (timeSelect.options.length === 0) {
+  
+    // If only placeholder remains
+    if (timeSelect.options.length === 1) {
       let opt = document.createElement("option");
       opt.text = "No available time slots";
       opt.value = "";
       timeSelect.add(opt);
     }
-
-    document.getElementById("duration").disabled = true;
+  
     updateBreakdownButton();
   }
 
@@ -556,7 +562,7 @@
 
 
 
-  function checkAvailability() {
+  function checkAvailability(event) {
     const data = getFormData();
 
     if (!data.court || !data.date || !data.timeIn || !data.duration) {
