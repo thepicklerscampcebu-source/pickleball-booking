@@ -296,19 +296,19 @@
     .then(res => res.json())
     .then(res => {
       if (res.conflict) {
-        alert('WARNING! Conflict is detected in your selected court, date, and time. Please check the site calendar or click "Check Court Availability" button and try again.');
+        alert('WARNING!...');
         return;
       }
-
+    
       document.getElementById("formPage").classList.add("hidden");
       document.getElementById("summaryPage").classList.remove("hidden");
     })
-
-      btn.disabled = false;
-      btn.innerText = "Proceed to Payment";
-    
     .catch(err => {
       alert("Error: " + err.message);
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.innerText = "Proceed to Payment";
     });
 
     document.getElementById("summaryAmount").innerText = calculateSummaryTotal(data);
