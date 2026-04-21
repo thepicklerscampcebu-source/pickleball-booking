@@ -264,6 +264,17 @@
       return;
     }
 
+    const today = new Date();
+    const selected = new Date(data.date);
+    
+    today.setHours(0,0,0,0);
+    selected.setHours(0,0,0,0);
+    
+    if (selected < today) {
+      alert("You cannot select a past date.");
+      return;
+    }
+
     let timeOutFormatted = calculateTimeOut(data.timeIn, data.duration);
 
     document.getElementById("summaryText").innerHTML = `
@@ -401,7 +412,7 @@
   }
 
   // Init
-  window.addEventListener("DOMContentLoaded", function () {
+  window.onload = function () {
     setMinDate();
     updateTimeInOptions();
     updateBreakdownButton();
@@ -422,20 +433,21 @@
 
   function updateTimeInOptions() {
     const timeSelect = document.getElementById("timeIn");
+    const durationSelect = document.getElementById("duration");
     const selectedDate = document.getElementById("date").value;
   
     const now = new Date();
-    const todayStr = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-                      .toISOString()
-                      .split("T")[0];
-  
     const currentHour = now.getHours();
   
-    // 🔥 RESET FIRST (IMPORTANT)
+    const today = new Date();
+    const todayStr = today.getFullYear() + "-" +
+      String(today.getMonth() + 1).padStart(2, "0") + "-" +
+      String(today.getDate()).padStart(2, "0");
+  
+    // Reset
     timeSelect.innerHTML = "";
-    document.getElementById("timeIn").value = "";
-    document.getElementById("duration").innerHTML = "";
-    document.getElementById("duration").disabled = true;
+    durationSelect.innerHTML = "";
+    durationSelect.disabled = true;
   
     // Placeholder
     let placeholder = document.createElement("option");
@@ -443,12 +455,10 @@
     placeholder.text = "Select Time-in";
     timeSelect.add(placeholder);
   
-    // Populate options
+    // Populate
     for (let h = openingHour; h <= 23; h++) {
   
-      if (selectedDate && selectedDate === todayStr && h <= currentHour) {
-        continue;
-      }
+      if (selectedDate === todayStr && h <= currentHour) continue;
   
       let opt = document.createElement("option");
       opt.value = h;
@@ -456,7 +466,7 @@
       timeSelect.add(opt);
     }
   
-    // If only placeholder remains
+    // No slots
     if (timeSelect.options.length === 1) {
       let opt = document.createElement("option");
       opt.text = "No available time slots";
