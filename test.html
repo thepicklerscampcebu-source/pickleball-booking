@@ -600,7 +600,7 @@
     const duration = parseInt(document.getElementById("duration").value);
     const selectedDate = document.getElementById("date").value;
 
-    if (!timeIn || !duration || !selectedDate) {
+    if (isNaN(timeIn) || isNaN(duration) || !selectedDate) {
       return "Please select date, time, and duration.";
     }
   
