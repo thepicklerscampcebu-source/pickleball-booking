@@ -573,17 +573,45 @@
   }
 
 
+  function isWeekend(dateString) {
+    const date = new Date(dateString);
+    const day = date.getDay(); // 0 = Sunday, 6 = Saturday
+    return day === 0 || day === 6;
+  }
+
+
   function getRate(hour) {
+    const selectedDate = document.getElementById("date").value;
+  
+    if (!selectedDate) return 0; // prevent wrong pricing
+  
+    const weekend = isWeekend(selectedDate);
+  
+    if (weekend) {
+      return hour < 16 ? 350 : 390;
+    }
+  
     return hour < 16 ? 320 : 370;
   }
+  
 
   function generateBreakdown() {
     const timeIn = parseInt(document.getElementById("timeIn").value);
     const duration = parseInt(document.getElementById("duration").value);
+    const selectedDate = document.getElementById("date").value;
 
-    if (!timeIn || !duration) return "Please select time and duration.";
+    if (!timeIn || !duration || !selectedDate) {
+      return "Please select date, time, and duration.";
+    }
+  
+    const weekend = isWeekend(selectedDate);
+  
+    // ✅ HEADER
+    let header = weekend
+      ? `<div style="margin-bottom:10px; color:#40b55c;"><strong>Your selected date is a WEEKEND. Weekend rates will apply.</strong></div>`
+      : `<div style="margin-bottom:10px; color:#40b55c;"><strong>Your selected date is a WEEKDAY. Weekday rates will apply.</strong></div>`;
 
-    let breakdownHTML = "";
+    let breakdownHTML = header;
     let total = 0;
 
     for (let i = 0; i < duration; i++) {
