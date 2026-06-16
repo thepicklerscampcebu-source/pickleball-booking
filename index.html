@@ -58,17 +58,18 @@
   <input type="text" id="address" placeholder="Address (optional)">
 
   <label for="court">Court</label>
-  <select id="court">
+  <select id="court" onchange="computeTotal(); updateBreakdownButton();">
     <option value="">Select Court</option>
     <option value="Court 1">Court 1</option>
     <option value="Court 2">Court 2</option>
+    <option value="Court 1 and Court 2">Court 1 and Court 2</option>
   </select>
 
   <label for="date">Date</label>
   <input type="date" id="date" required onchange="updateTimeInOptions()">
 
   <label for="timeIn">Time-in</label>
-  <select id="timeIn" onchange="updateDuration()"></select>
+  <select id="timeIn" onchange="updateDuration(); computeTotal(); updateBreakdownButton();"></select>
 
   <label for="duration">Duration of stay</label>
   <select id="duration" onchange="computeTotal(); updateBreakdownButton();"></select>
@@ -218,10 +219,11 @@
 
   // Compute total
   function computeTotal() {
+    let court = document.getElementById("court").value;
     let timeIn = parseInt(document.getElementById("timeIn").value);
     let duration = parseInt(document.getElementById("duration").value) || 0;
 
-    if (isNaN(timeIn) || !duration) {
+    if (!court || isNaN(timeIn) || !duration) {
       document.getElementById("total").innerText = 0;
       return;
     }
@@ -233,7 +235,15 @@
       total += getRate(hour);
     }
 
+    total *= getCourtMultiplier();
     document.getElementById("total").innerText = total;
+  }
+
+  
+  function getCourtMultiplier() {
+    const court = document.getElementById("court").value;
+  
+    return court === "Court 1 and Court 2" ? 2 : 1;
   }
 
   // Go to summary
@@ -569,7 +579,8 @@
       total += getRate(hour);
     }
 
-    return total || 0;
+    total *= (data.court === "Court 1 and Court 2") ? 2 : 1;
+    return total;
   }
 
 
@@ -596,38 +607,59 @@
   
 
   function generateBreakdown() {
+    const court = document.getElementById("court").value;
     const timeIn = parseInt(document.getElementById("timeIn").value);
     const duration = parseInt(document.getElementById("duration").value);
     const selectedDate = document.getElementById("date").value;
-
-    if (isNaN(timeIn) || isNaN(duration) || !selectedDate) {
-      return "Please select date, time, and duration.";
+  
+    if (!court || isNaN(timeIn) || isNaN(duration) || !selectedDate) {
+      return "Please select court, date, time, and duration.";
     }
   
     const weekend = isWeekend(selectedDate);
   
-    // ✅ HEADER
     let header = weekend
-      ? `<div style="margin-bottom:10px; color:#40b55c;"><strong>Your selected date is a WEEKEND. <br>Weekend rates will apply.</strong></div>`
-      : `<div style="margin-bottom:10px; color:#40b55c;"><strong>Your selected date is a WEEKDAY. <br>Weekday rates will apply.</strong></div>`;
-
+      ? `<div style="margin-bottom:10px; color:#40b55c;">
+           <strong>Your selected date is a WEEKEND.<br>Weekend rates will apply.</strong>
+         </div>`
+      : `<div style="margin-bottom:10px; color:#40b55c;">
+           <strong>Your selected date is a WEEKDAY.<br>Weekday rates will apply.</strong>
+         </div>`;
+  
     let breakdownHTML = header;
     let total = 0;
-
+  
+    const bothCourts = court === "Court 1 and Court 2";
+  
     for (let i = 0; i < duration; i++) {
+  
       let hourStart = timeIn + i;
-      let hourEnd = hourStart + 1;
-
+  
       let rate = getRate(hourStart);
-      total += rate;
-
-      breakdownHTML += `
-        ${formatTime(hourStart)} - ${calculateTimeOut(hourStart, 1)} : ₱${rate}<br>
-      `;
+  
+      let amount;
+  
+      if (bothCourts) {
+        amount = rate * 2;
+  
+        breakdownHTML += `
+          ${formatTime(hourStart)} - ${calculateTimeOut(hourStart,1)}
+          : ₱${rate} × 2 courts = ₱${amount}<br>
+        `;
+      } else {
+        amount = rate;
+  
+        breakdownHTML += `
+          ${formatTime(hourStart)} - ${calculateTimeOut(hourStart,1)}
+          : ₱${amount}<br>
+        `;
+      }
+  
+      total += amount;
     }
-
+  
     breakdownHTML += `<hr><strong>Total: ₱${total}</strong>`;
-
+  
     return breakdownHTML;
   }
 
@@ -658,12 +690,13 @@
 
 
   function updateBreakdownButton() {
+    const court = document.getElementById("court").value;
     const timeIn = document.getElementById("timeIn").value;
     const duration = document.getElementById("duration").value;
 
     const btn = document.getElementById("breakdownBtn");
 
-    if (timeIn && duration) {
+    if (court && timeIn && duration) {
       btn.disabled = false;
       btn.style.opacity = "1";
     } else {
@@ -722,10 +755,14 @@
 
     if (res.conflict) {
       title.innerText = "Not Available ❌";
-      msg.innerText = `Sorry, ${court} is NOT AVAILABLE for your selected date and time. Please select another court or another schedule.`;
+          msg.innerText =
+      "The following court(s) are already occupied during your selected schedule:\n\n" +
+      res.occupiedCourts.join(", ") +
+      ".\n\nPlease select another court or another time.";
+      
     } else {
       title.innerText = "Available ✅";
-      msg.innerText = `${court} is AVAILABLE for your selected date and time!`;
+      msg.innerText = `${court} is/are AVAILABLE for your selected date and time!`;
     }
 
     document.getElementById("availabilityModal").style.display = "block";
