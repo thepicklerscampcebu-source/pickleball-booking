@@ -611,41 +611,55 @@
     const timeIn = parseInt(document.getElementById("timeIn").value);
     const duration = parseInt(document.getElementById("duration").value);
     const selectedDate = document.getElementById("date").value;
-
+  
     if (!court || isNaN(timeIn) || isNaN(duration) || !selectedDate) {
       return "Please select court, date, time, and duration.";
     }
   
     const weekend = isWeekend(selectedDate);
   
-    // ✅ HEADER
     let header = weekend
-      ? `<div style="margin-bottom:10px; color:#40b55c;"><strong>Your selected date is a WEEKEND. <br>Weekend rates will apply.</strong></div>`
-      : `<div style="margin-bottom:10px; color:#40b55c;"><strong>Your selected date is a WEEKDAY. <br>Weekday rates will apply.</strong></div>`;
-
+      ? `<div style="margin-bottom:10px; color:#40b55c;">
+           <strong>Your selected date is a WEEKEND.<br>Weekend rates will apply.</strong>
+         </div>`
+      : `<div style="margin-bottom:10px; color:#40b55c;">
+           <strong>Your selected date is a WEEKDAY.<br>Weekday rates will apply.</strong>
+         </div>`;
+  
     let breakdownHTML = header;
     let total = 0;
-
+  
+    const bothCourts = court === "Court 1 and Court 2";
+  
     for (let i = 0; i < duration; i++) {
+  
       let hourStart = timeIn + i;
-      let hourEnd = hourStart + 1;
-
+  
       let rate = getRate(hourStart);
-
-      const multiplier = getCourtMultiplier();
-      
-      const amount = rate * multiplier;
-      
+  
+      let amount;
+  
+      if (bothCourts) {
+        amount = rate * 2;
+  
+        breakdownHTML += `
+          ${formatTime(hourStart)} - ${calculateTimeOut(hourStart,1)}
+          : ₱${rate} × 2 courts = ₱${amount}<br>
+        `;
+      } else {
+        amount = rate;
+  
+        breakdownHTML += `
+          ${formatTime(hourStart)} - ${calculateTimeOut(hourStart,1)}
+          : ₱${amount}<br>
+        `;
+      }
+  
       total += amount;
-      
-      breakdownHTML += `
-      ${formatTime(hourStart)} - ${calculateTimeOut(hourStart,1)}
-      : ₱${amount}<br>
-      `;
     }
-
+  
     breakdownHTML += `<hr><strong>Total: ₱${total}</strong>`;
-
+  
     return breakdownHTML;
   }
 
