@@ -62,7 +62,7 @@
     <option value="">Select Court</option>
     <option value="Court 1">Court 1</option>
     <option value="Court 2">Court 2</option>
-    <option value="Court 1 and 2">Court 1 and Court 2</option>
+    <option value="Court 1 and Court 2">Court 1 and Court 2</option>
   </select>
 
   <label for="date">Date</label>
@@ -242,7 +242,7 @@
   function getCourtMultiplier() {
     const court = document.getElementById("court").value;
   
-    return court === "Court 1 and 2" ? 2 : 1;
+    return court === "Court 1 and Court 2" ? 2 : 1;
   }
 
   // Go to summary
@@ -578,7 +578,7 @@
       total += getRate(hour);
     }
 
-    total *= (data.court === "Court 1 and 2") ? 2 : 1;
+    total *= (data.court === "Court 1 and Court 2") ? 2 : 1;
     return total;
   }
 
