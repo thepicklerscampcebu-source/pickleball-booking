@@ -263,6 +263,14 @@
       <button type="button" onclick="selectPayment('bpi')">
         BPI
       </button>
+
+      <button type="button" onclick="selectPayment('maya')">
+        Maya
+      </button>
+    
+      <button type="button" onclick="selectPayment('gotyme')">
+        GoTyme
+      </button>
     
     </div>
 
@@ -369,7 +377,25 @@
         <strong>BPI Account No:</strong> 1469011579
       `
     },
-  
+
+    maya: {
+      title: "Maya",
+      qr: "Images/Maya QR.jpg",
+      details: `
+        <strong>Account Name:</strong> Erick Batiancela<br>
+        <strong>Maya Number:</strong> 0967 061 6311
+      `
+    },
+
+    gotyme: {
+      title: "GoTyme",
+      qr: "Images/GoTyme QR.jpg",
+      details: `
+        <strong>Account Name:</strong> Erick Batiancela<br>
+        <strong>GoTyme Account No:</strong> 013118190067
+      `
+    }
+    
   };
   
   qrCode.onclick = () => {
