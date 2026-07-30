@@ -603,6 +603,7 @@
       setStep(2);
       
       document.getElementById("formPage").classList.add("hidden");
+      changePaymentMethod();
       document.getElementById("summaryPage").classList.remove("hidden");
     })
     .catch(err => {
@@ -613,7 +614,6 @@
       btn.innerText = "Proceed to Payment";
     });
 
-    document.getElementById("summaryAmount").innerText = calculateSummaryTotal();
   }
 
   // Collect form data
