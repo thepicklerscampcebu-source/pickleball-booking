@@ -952,7 +952,7 @@
   }
   
   
-
+  
   function getRate(hour) {
   
     const selectedDate =
@@ -962,16 +962,23 @@
   
     const weekend = isWeekend(selectedDate);
   
-    // New rates effective November 1, 2026
+    // Pricing change takes effect based on today's date
     const effectiveDate = "2026-11-01";
   
-    if (selectedDate >= effectiveDate) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+  
+    const changeDate = new Date(effectiveDate + "T00:00:00");
+  
+    const newRates = today >= changeDate;
+  
+    const peakHour = hour >= 16;
+  
+    if (newRates) {
       return weekend ? 350 : 300;
     }
   
-    // Existing rates before November 1, 2026
-    const peakHour = hour >= 16;
-  
+    // Old rates remain until November 1, 2026
     if (weekend) {
       return peakHour ? 400 : 350;
     }
